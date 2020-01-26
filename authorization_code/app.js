@@ -14,9 +14,9 @@ var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var client_id = '***'; // Your client id
-var client_secret = '***'; // Your secret
-var redirect_uri = '***'; // Your redirect uri
+var client_id = 'f24cdf55bb5345c3bd0732c13fe4d122'; // Your client id
+var client_secret = 'c6672f278a344014a68a9c6fc13a7ab5'; // Your secret
+var redirect_uri = 'http://localhost:8888/callback'; // 
 
 /**
  * Generates a random string containing numbers and letters
@@ -151,6 +151,9 @@ app.post('/track_data', function(req, res) {
   var nameList = req.body.tracks;
   
   var promiseArray = nameList.map(name => {
+      
+      name = name.split("-").join("").split("–").join("");
+      console.log(name);
       return new Promise((resolve, reject) => {
         request.get({
           url: "https://conuhacks-2020.tsp.cld.touchtunes.com/v1/songs?query=" + name.trim(),
@@ -158,7 +161,17 @@ app.post('/track_data', function(req, res) {
           json: true
         }, function(error, response, body) {
           if(error){
+            console.log("https://conuhacks-2020.tsp.cld.touchtunes.com/v1/songs?query=" + name.trim());
             console.log(error);
+            resolve({
+              id:  -1,
+              styleName: "string",
+              genreName: "string",
+              duration: 1,
+              title: "string",
+              playUrl: "string",
+              artist: "any",
+              album: "any"});
           }
           
               
@@ -170,15 +183,43 @@ app.post('/track_data', function(req, res) {
               json: true
             }, function(detailError, detailResponse, detailBody) {
               if(detailError){
+                console.log("https://conuhacks-2020.tsp.cld.touchtunes.com/v1/songs/" + body.songs[0].id.toString().trim());
                 console.log(detailError);
+                resolve({
+                  id:  -1,
+                  styleName: "string",
+                  genreName: "string",
+                  duration: 1,
+                  title: "string",
+                  playUrl: "string",
+                  artist: "any",
+                  album: "any"});
               }
               if (!detailError && detailResponse.statusCode === 200 && detailBody) {
                   resolve(detailBody);
-                
-                
+              }else{
+                resolve({
+                  id:  -1,
+                  styleName: "string",
+                  genreName: "string",
+                  duration: 1,
+                  title: "string",
+                  playUrl: "string",
+                  artist: "any",
+                  album: "any"});
               }
             });
             
+          }else{
+            resolve({
+              id:  -1,
+              styleName: "string",
+              genreName: "string",
+              duration: 1,
+              title: "string",
+              playUrl: "string",
+              artist: "any",
+              album: "any"})
           }
         });
       })
